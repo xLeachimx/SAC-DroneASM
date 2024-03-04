@@ -1,0 +1,54 @@
+DroneASM Command Description:
+=============================
+
+Variable Operations:
+STORE <value> <num_reg>
+COPY <num_reg> <num_reg>
+COPY_PIC <pic_reg> <pic_reg>
+PUSH_NUM <num_reg | number>
+PUSH_RETURN <label>
+PUSH_PIC <pic_reg>
+POP_NUM <num_reg>
+POP_PIC <pic_reg>
+POP_RETURN
+
+Flow Control Operations:
+BRANCH_EQ <num_reg | number> <num_reg | number> <label>
+BRANCH_NE <num_reg | number> <num_reg | number> <label>
+BRANCH_GT <num_reg | number> <num_reg | number> <label>
+BRANCH_LT <num_reg | number> <num_reg | number> <label>
+BRANCH_GE <num_reg | number> <num_reg | number> <label>
+BRANCH_LE <num_reg | number> <num_reg | number> <label>
+JUMP <label>
+JUMP_RETURN
+NOP
+HALT
+
+Math Operations:
+ADD <num_reg | number> <num_reg | number> <num_reg>
+SUB <num_reg | number> <num_reg | number> <num_reg>
+MULT <num_reg | number> <num_reg | number> <num_reg>
+DIV <num_reg | number> <num_reg | number> <num_reg>
+IDIV <num_reg | number> <num_reg | number> <num_reg>
+RDIV <num_reg | number> <num_reg | number> <num_reg>
+
+Drone Operations:
+TAKEOFF
+LAND
+FORWARD <num_reg | number>
+BACKWARD <num_reg | number>
+LEFT <num_reg | number>
+RIGHT <num_reg | number>
+UP <num_reg | number>
+DOWN <num_reg | number>
+ROTATE_CW <num_reg | number>
+ROTATE_CCW <num_reg | number>
+
+Evaluation/Debug Operations:
+DISPLAY <num_reg | number | string | pic_reg>
+
+Camera Operations:
+TAKE_PIC <pic_reg>
+
+Computer Vision Operations:
+**Coming Soon**
