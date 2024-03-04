@@ -550,6 +550,7 @@ class DroneVM:
                         val = float(val)
                     else:
                         raise RuntimeSoftwareErrorException(f"Unknown value type.")
+                    val = int(val)
                     if not self.drone.forward(val):
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.forward(val)
@@ -568,6 +569,7 @@ class DroneVM:
                         val = float(val)
                     else:
                         raise RuntimeSoftwareErrorException(f"Unknown value type.")
+                    val = int(val)
                     if not self.drone.backward(val):
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.backward(val)
@@ -586,6 +588,7 @@ class DroneVM:
                         val = float(val)
                     else:
                         raise RuntimeSoftwareErrorException(f"Unknown value type.")
+                    val = int(val)
                     if not self.drone.left(val):
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.left(val)
@@ -604,6 +607,7 @@ class DroneVM:
                         val = float(val)
                     else:
                         raise RuntimeSoftwareErrorException(f"Unknown value type.")
+                    val = int(val)
                     if not self.drone.right(val):
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.right(val)
@@ -622,6 +626,7 @@ class DroneVM:
                         val = float(val)
                     else:
                         raise RuntimeSoftwareErrorException(f"Unknown value type.")
+                    val = int(val)
                     if not self.drone.up(val):
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.up(val)
@@ -640,6 +645,7 @@ class DroneVM:
                         val = float(val)
                     else:
                         raise RuntimeSoftwareErrorException(f"Unknown value type.")
+                    val = int(val)
                     if not self.drone.down(val):
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.down(val)
@@ -658,6 +664,7 @@ class DroneVM:
                         val = float(val)
                     else:
                         raise RuntimeSoftwareErrorException(f"Unknown value type.")
+                    val = int(val)
                     if not self.drone.rotate_cw(val):
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.rotate_cw(val)
@@ -676,6 +683,7 @@ class DroneVM:
                         val = float(val)
                     else:
                         raise RuntimeSoftwareErrorException(f"Unknown value type.")
+                    val = int(val)
                     if not self.drone.rotate_ccw(val):
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.rotate_ccw(val)
