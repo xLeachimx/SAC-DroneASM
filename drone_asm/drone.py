@@ -416,7 +416,7 @@ class TelloDrone(Drone):
 class SimulatedDrone(Drone):
     def __init__(self):
         self.location = [0, 0, 0]
-        self.facing = 0
+        self.facing = 0.0
         self.connected = True
         self.flying = False
     
@@ -446,13 +446,11 @@ class SimulatedDrone(Drone):
         return True
     
     def left(self, val):
-        # Inaccurate
         self.location[0] += val * cos(self.facing + radians(90))
         self.location[1] += val * sin(self.facing + radians(90))
         return True
     
     def right(self, val):
-        # Inaccurate
         self.location[0] += val * cos(self.facing - radians(90))
         self.location[1] += val * sin(self.facing - radians(90))
         return True
