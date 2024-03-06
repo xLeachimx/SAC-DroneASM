@@ -47,10 +47,14 @@ def _test_string(token: Token):
 #   Returns None
 #   Raises a ValidationErrorException if the given tokens do not form a valid line.
 def validate_line(tokens: [Token, ...]):
+    if len(tokens) == 0:
+        return True
     # Check for a beginning label
     label_offset = 0
     if tokens[0].token_type == "Label":
         label_offset += 1
+        if len(tokens) == 1:
+            return True
     # Make sure we start with a command
     if tokens[label_offset].token_type != "Command":
         raise ValidationErrorException("Line does not start with a command.")

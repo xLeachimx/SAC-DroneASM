@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9b231a4-64c8-4783-ae95-d70f4fa2db48" name="Changes" comment="Improvements a simulated drone &quot;tracking&quot;">
+    <list default="true" id="a9b231a4-64c8-4783-ae95-d70f4fa2db48" name="Changes" comment="Fixed the flight bugs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drone_asm/drone.py" beforeDir="false" afterPath="$PROJECT_DIR$/drone_asm/drone.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/drone_asm/asm_compiler/asm_validator.py" beforeDir="false" afterPath="$PROJECT_DIR$/drone_asm/asm_compiler/asm_validator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,13 +123,22 @@
       <option name="project" value="LOCAL" />
       <updated>1709576306148</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Fixed the flight bugs">
+      <option name="closed" value="true" />
+      <created>1709750056702</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1709750056702</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Basic DroneASM editor and executor done." />
     <MESSAGE value="Changed Movement to be integers" />
     <MESSAGE value="Improvements a simulated drone &quot;tracking&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improvements a simulated drone &quot;tracking&quot;" />
+    <MESSAGE value="Fixed the flight bugs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed the flight bugs" />
   </component>
 </project>
