@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9b231a4-64c8-4783-ae95-d70f4fa2db48" name="Changes" comment="Changed Movement to be integers">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="a9b231a4-64c8-4783-ae95-d70f4fa2db48" name="Changes" comment="Improvements a simulated drone &quot;tracking&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DroneASMInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/DroneASMInterface.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/drone_asm/drone.py" beforeDir="false" afterPath="$PROJECT_DIR$/drone_asm/drone.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drone_asm/drone_virtual_machine.py" beforeDir="false" afterPath="$PROJECT_DIR$/drone_asm/drone_virtual_machine.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,12 +115,21 @@
       <option name="project" value="LOCAL" />
       <updated>1709553365000</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Improvements a simulated drone &quot;tracking&quot;">
+      <option name="closed" value="true" />
+      <created>1709576306148</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1709576306148</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Basic DroneASM editor and executor done." />
     <MESSAGE value="Changed Movement to be integers" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed Movement to be integers" />
+    <MESSAGE value="Improvements a simulated drone &quot;tracking&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improvements a simulated drone &quot;tracking&quot;" />
   </component>
 </project>

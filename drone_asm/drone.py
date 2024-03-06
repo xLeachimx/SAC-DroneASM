@@ -113,7 +113,7 @@ class TelloDrone(Drone):
         self.rc_freq = 30
         self.cmd_log = []
         self.last_state = None
-        self.MAX_TIMEOUT = 5
+        self.MAX_TIMEOUT = 10
         
         # Threads
         self.receive_thread = Thread(target=self.__receive)
@@ -282,7 +282,7 @@ class TelloDrone(Drone):
     def backward(self, val) -> bool:
         if val not in range(20, 501):
             return False
-        res = self.__send_cmd("backward " + str(val))
+        res = self.__send_cmd("back " + str(val))
         return res is not None and res == "ok"
     
     # Precond:
@@ -293,7 +293,7 @@ class TelloDrone(Drone):
     def rotate_cw(self, val) -> bool:
         if val not in range(1, 361):
             return False
-        res = self.__send_cmd("rotate cw " + str(val))
+        res = self.__send_cmd("cw " + str(val))
         return res is not None and res == "ok"
     
     # Precond:
@@ -304,7 +304,7 @@ class TelloDrone(Drone):
     def rotate_ccw(self, val) -> bool:
         if val not in range(1, 361):
             return False
-        res = self.__send_cmd("rotate ccw " + str(val))
+        res = self.__send_cmd("ccw " + str(val))
         return res is not None and res == "ok"
     
     # Precond:
