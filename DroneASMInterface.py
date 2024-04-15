@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # File: DroneASMInterface.py
 # Author: Michael Huelsman
 # Copyright: Dr. Michael Andrew Huelsman 2024
@@ -6,7 +7,10 @@
 # Purpose:
 #   An interface for using DroneASM written with tkinter
 # Notes:
+import math
 import os.path
+import shutil
+import time
 import tkinter as tk
 from tkinter import Tk, scrolledtext
 from tkinter import ttk, filedialog, messagebox
@@ -34,11 +38,15 @@ class DroneASMInterface:
         self.load_btn.grid(column=2, row=0)
         self.save_btn = ttk.Button(self.nav_bar, text="Save File", command=self.save)
         self.save_btn.grid(column=3, row=0)
+        self.move_pic_btn = ttk.Button(self.nav_bar, text="Move Pic", command=DroneASMInterface.move_pic)
+        self.move_pic_btn.grid(column=4, row=0)
         self.simulation_switch = tk.Button(self.nav_bar, text="Simulation", bg="#53e079", width=10,
                                            command=self.sim_switch)
         self.simulation_switch.grid(column=0, row=0)
+        self.halt_btn = ttk.Button(self.nav_bar, text="Halt", command=self.stop_prog)
+        self.halt_btn.grid(column=5, row=1)
         self.quit_btn = ttk.Button(self.nav_bar, text="Quit", command=self.destroy)
-        self.quit_btn.grid(column=4, row=0)
+        self.quit_btn.grid(column=5, row=0)
         # Compilation Buttons
         self.comp_btn = ttk.Button(self.prog_btns, text="Compile", command=self.compile)
         self.comp_btn.grid(column=0, row=0)
@@ -59,6 +67,7 @@ class DroneASMInterface:
         self.yz_label = tk.Label(self.prog_btns, text="Y Z")
         self.yz_label.grid(column=0, row=6)
         self.xy_lines = self.xz_lines = self.yz_lines = []
+        self.drone_render = []
         # Text box
         self.program_name = tk.Text(self.text_field, height=1, width=30)
         self.program_name.insert(tk.INSERT, "untitled.dasm")
@@ -70,6 +79,7 @@ class DroneASMInterface:
         self.program = None
         self.vm = DroneVM()
         self.simulation = True
+        self.stop_run = False
 
     def start(self):
         self.root.mainloop()
@@ -93,7 +103,16 @@ class DroneASMInterface:
         self.vm.reset()
         self.clear_paths()
         try:
-            self.vm.run_program(self.program, self.simulation)
+            self.stop_run = False
+            for _ in self.vm.run_program(self.program, self.simulation):
+                self.clear_paths()
+                self.render_path()
+                self.root.update()
+                if self.simulation:
+                    time.sleep(.1)
+                if self.stop_run:
+                    break
+            self.render_path()
         except RuntimeSoftwareErrorException as exp:
             messagebox.showerror("Runtime Software Error", exp.message)
         except RuntimeHardwareErrorException as exp:
@@ -121,6 +140,13 @@ class DroneASMInterface:
             with open(filename, "r") as fin:
                 self.program_txt.insert('1.0', fin.read())
 
+    @staticmethod
+    def move_pic(self):
+        filename = tk.filedialog.askopenfilename(initialdir=os.path.curdir, title="Select File to Load",
+                                                 filetypes=[("Pictures", "*.jpg"), ("All Files", "*.*")])
+        if filename:
+            shutil.copy(filename, ".")
+
     def sim_switch(self):
         self.simulation = not self.simulation
         if self.simulation:
@@ -135,7 +161,10 @@ class DroneASMInterface:
             self.xz_display.delete(i)
         for i in self.yz_lines:
             self.yz_display.delete(i)
-        self.root.after(1)
+        for i in self.drone_render:
+            self.xy_display.delete(i)
+        self.xy_lines = self.yz_lines = self.xz_lines = self.drone_render = []
+        # self.root.after(1)
 
     def render_path(self):
         # Determine some base values
@@ -170,8 +199,26 @@ class DroneASMInterface:
         for i in range(len(yz_path)-1):
             obj_id = self.yz_display.create_line(yz_path[i], yz_path[i+1], width=3)
             self.yz_lines.append(obj_id)
-        self.root.after(1)
+        # render the drone
+        yaw = 0
+        try:
+            yaw = self.vm.drone_tracking.get_state()['yaw']
+        except KeyError:
+            return
+        radius = 7
+        location = self.vm.drone_path[-1][:2]
+        location[0] = DroneASMInterface.__scale_placement(location[0], x_min, x_max, 0, 100)
+        location[1] = DroneASMInterface.__scale_placement(location[1], y_min, y_max, 0, 100)
+        front_pt = location[0] + radius*math.cos(yaw), location[1] + radius*math.sin(yaw)
+        front_pt = list(map(int, front_pt))
+        oval_pt1 = [location[0]-radius, location[1]-radius]
+        oval_pt2 = [location[0]+radius, location[1]+radius]
+        self.drone_render.append(self.xy_display.create_line(location, front_pt, width=5, fill="red"))
+        self.drone_render.append(self.xy_display.create_oval(oval_pt1, oval_pt2, width=1, outline="red"))
+        # self.root.after(1)
 
+    def stop_prog(self):
+        self.stop_run = True
 
     def destroy(self):
         self.root.destroy()

@@ -8,8 +8,9 @@
 # Notes:
 import cv2
 
-from .asm_compiler.asm_constants import Program
-from .drone import TelloDrone, SimulatedDrone, Drone
+from drone_asm.drone import TelloDrone, SimulatedDrone
+from drone_asm.asm_compiler import Program
+from drone_asm.facial_recognition import find_faces, encode_face, face_similarity
 
 
 class RuntimeSoftwareErrorException(Exception):
@@ -27,11 +28,13 @@ class RuntimeHardwareErrorException(Exception):
 class DroneVM:
     __NUMERICAL_REGISTERS = 16
     __PICTURE_REGISTERS = 8
+    __FACE_REGISTERS = 8
     
     def __init__(self):
         # Register setup
         self.num_reg = [0 for i in range(DroneVM.__NUMERICAL_REGISTERS)]
         self.pic_reg = [None for i in range(DroneVM.__PICTURE_REGISTERS)]
+        self.face_reg = [(None, None) for i in range(DroneVM.__FACE_REGISTERS)]
         self.return_reg = 0
         # Stack setup
         self.num_stack = []
@@ -40,12 +43,13 @@ class DroneVM:
         # Setup drone
         self.drone_tracking = SimulatedDrone()
         self.drone = SimulatedDrone()
-        self.drone_path = [self.drone.get_state()[:]]
+        self.drone_path = [self.drone_tracking.get_state()['loc'][:]]
         
     def reset(self):
         # Register setup
         self.num_reg = [0 for i in range(DroneVM.__NUMERICAL_REGISTERS)]
         self.pic_reg = [None for i in range(DroneVM.__PICTURE_REGISTERS)]
+        self.face_reg = [(None, None) for i in range(DroneVM.__FACE_REGISTERS)]
         self.return_reg = 0
         # Stack setup
         self.num_stack = []
@@ -54,7 +58,7 @@ class DroneVM:
         # Setup drone
         self.drone_tracking = SimulatedDrone()
         self.drone = SimulatedDrone()
-        self.drone_path = [self.drone.get_state()[:]]
+        self.drone_path = [self.drone_tracking.get_state()['loc'][:]]
     
     def run_program(self, program: Program, simulated: bool = True):
         program_counter = 0
@@ -66,6 +70,7 @@ class DroneVM:
             raise RuntimeHardwareErrorException("Unable to connect to drone.")
         # Main Execution Look
         while running:
+            yield None
             if program_counter >= program.line_count():
                 running = False
                 continue
@@ -622,7 +627,7 @@ class DroneVM:
                         self.drone.shutdown()
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.forward(val)
-                    self.drone_path.append(self.drone_tracking.get_state()[:])
+                    self.drone_path.append(self.drone_tracking.get_state()['loc'][:])
                 case "BACKWARD":
                     val = current_line[1].value
                     if current_line[1].token_type == "NumReg":
@@ -644,7 +649,7 @@ class DroneVM:
                         self.drone.shutdown()
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.backward(val)
-                    self.drone_path.append(self.drone_tracking.get_state()[:])
+                    self.drone_path.append(self.drone_tracking.get_state()['loc'][:])
                 case "LEFT":
                     val = current_line[1].value
                     if current_line[1].token_type == "NumReg":
@@ -666,7 +671,7 @@ class DroneVM:
                         self.drone.shutdown()
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.left(val)
-                    self.drone_path.append(self.drone_tracking.get_state()[:])
+                    self.drone_path.append(self.drone_tracking.get_state()['loc'][:])
                 case "RIGHT":
                     val = current_line[1].value
                     if current_line[1].token_type == "NumReg":
@@ -688,7 +693,7 @@ class DroneVM:
                         self.drone.shutdown()
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.right(val)
-                    self.drone_path.append(self.drone_tracking.get_state()[:])
+                    self.drone_path.append(self.drone_tracking.get_state()['loc'][:])
                 case "UP":
                     val = current_line[1].value
                     if current_line[1].token_type == "NumReg":
@@ -710,7 +715,7 @@ class DroneVM:
                         self.drone.shutdown()
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.up(val)
-                    self.drone_path.append(self.drone_tracking.get_state()[:])
+                    self.drone_path.append(self.drone_tracking.get_state()['loc'][:])
                 case "DOWN":
                     val = current_line[1].value
                     if current_line[1].token_type == "NumReg":
@@ -732,7 +737,7 @@ class DroneVM:
                         self.drone.shutdown()
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.down(val)
-                    self.drone_path.append(self.drone_tracking.get_state()[:])
+                    self.drone_path.append(self.drone_tracking.get_state()['loc'][:])
                 case "ROTATE_CW":
                     val = current_line[1].value
                     if current_line[1].token_type == "NumReg":
@@ -754,7 +759,7 @@ class DroneVM:
                         self.drone.shutdown()
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.rotate_cw(val)
-                    self.drone_path.append(self.drone_tracking.get_state()[:])
+                    self.drone_path.append(self.drone_tracking.get_state()['loc'][:])
                 case "ROTATE_CCW":
                     val = current_line[1].value
                     if current_line[1].token_type == "NumReg":
@@ -776,7 +781,7 @@ class DroneVM:
                         self.drone.shutdown()
                         raise RuntimeHardwareErrorException(f"Could not complete maneuver")
                     self.drone_tracking.rotate_ccw(val)
-                    self.drone_path.append(self.drone_tracking.get_state()[:])
+                    self.drone_path.append(self.drone_tracking.get_state()['loc'][:])
                 # Eval/Debug Operations
                 case "DISPLAY":
                     if current_line[1].token_type == "NumReg":
@@ -811,10 +816,57 @@ class DroneVM:
                 case "TAKE_PIC":
                     reg = int(current_line[1].value)
                     if 0 <= reg < len(self.pic_reg):
+                        while self.drone.last_frame is None:
+                            pass
                         self.pic_reg[reg] = self.drone.get_frame()
                     else:
                         self.drone.shutdown()
                         raise RuntimeSoftwareErrorException(f"Attempted use of non-existent register.")
+                # Computer vision operations
+                # LOAD_PIC <filename> <pic_reg>
+                # DETECT_FACE <pic_reg> <num_reg> <num_reg> <num_reg> <num_reg>
+                # ENCODE_FACE <pic_reg> <name> <num_reg> <num_reg> <num_reg> <num_reg>
+                # DETECT_PERSON <pic_reg> <name> <num_reg> <num_reg> <num_reg> <num_reg>
+                case "LOAD_PIC":
+                    filename = current_line[1].value
+                    reg = int(current_line[2].value)
+                    if 0 <= reg < len(self.pic_reg):
+                        try:
+                            self.pic_reg[reg] = cv2.imread(filename)
+                        except:
+                            raise RuntimeSoftwareErrorException(f"Attempted open non-existent or non-image file.")
+                    else:
+                        raise RuntimeSoftwareErrorException(f"Attempted use of non-existent register.")
+                case "DETECT_FACE":
+                    p_reg = int(current_line[1].value)
+                    f_reg = int(current_line[2].value)
+                    ret_reg = int(current_line[3].value)
+                    if not (0 <= p_reg < len(self.pic_reg)):
+                        raise RuntimeSoftwareErrorException(f"Attempted use of non-existent register.")
+                    if not (0 <= f_reg < len(self.face_reg)):
+                        raise RuntimeSoftwareErrorException(f"Attempted use of non-existent register.")
+                    if not (0 <= ret_reg < len(self.num_reg)):
+                        raise RuntimeSoftwareErrorException(f"Attempted use of non-existent register.")
+                    faces = find_faces(self.pic_reg[p_reg])
+                    if len(faces) > 0:
+                        self.num_reg[ret_reg] = 1
+                        self.face_reg[f_reg] = (faces[0], encode_face(self.pic_reg[p_reg], faces[0]))
+                    else:
+                        self.num_reg[ret_reg] = 0
+                case "MATCH_FACE":
+                    f_reg1 = int(current_line[1].value)
+                    f_reg2 = int(current_line[2].value)
+                    ret_reg = int(current_line[3].value)
+                    if not (0 <= f_reg1 < len(self.face_reg)):
+                        raise RuntimeSoftwareErrorException(f"Attempted use of non-existent register.")
+                    if not (0 <= f_reg2 < len(self.face_reg)):
+                        raise RuntimeSoftwareErrorException(f"Attempted use of non-existent register.")
+                    if not (0 <= ret_reg < len(self.num_reg)):
+                        raise RuntimeSoftwareErrorException(f"Attempted use of non-existent register.")
+                    if self.face_reg[f_reg1][1] is None or self.face_reg[f_reg2][1] is None:
+                        raise RuntimeSoftwareErrorException(f"Attempted to use empty face register.")
+                    self.num_reg[ret_reg] = face_similarity(self.face_reg[f_reg1][1], self.face_reg[f_reg2][1])
+                # By default, close the drone down and stop.
                 case _:
                     self.drone.shutdown()
                     raise RuntimeSoftwareErrorException(f"Unknown command.")

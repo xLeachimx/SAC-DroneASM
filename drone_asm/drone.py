@@ -419,13 +419,26 @@ class SimulatedDrone(Drone):
         self.facing = 0.0
         self.connected = True
         self.flying = False
+
+        # Video setup
+        self.video_connect_str = 0
+        self.video_stream = None
+        self.video_thread = Thread(target=self.__receive_video)
+        self.video_thread.daemon = True
+        self.last_frame = None
+        self.stream_active = False
+        self.frame_width = 0
+        self.frame_height = 0
     
     def connect(self):
         self.connected = True
+        self.video_start()
         return True
     
     def shutdown(self):
         self.connected = False
+        self.stream_active = False
+        self.video_thread.join()
     
     def takeoff(self):
         self.flying = True
@@ -464,7 +477,7 @@ class SimulatedDrone(Drone):
         return True
     
     def rotate_cw(self, val):
-        self.facing -= radians(val)
+        self.facing += radians(val)
         return True
     
     def rotate_ccw(self, val):
@@ -472,7 +485,34 @@ class SimulatedDrone(Drone):
         return True
     
     def get_frame(self):
-        return np.zeros((100, 100, 3), dtype=np.uint8)
+        return self.last_frame
     
     def get_state(self):
-        return self.location
+        state_dict = {'loc': self.location,
+                      'yaw': self.facing}
+        return state_dict
+
+    # Precond:
+    #   None.
+    #
+    # Postcond:
+    #   Starts the state receiving thread.
+    def video_start(self):
+        # Set up the video stream
+        self.stream_active = True
+        self.video_stream = cv.VideoCapture(self.video_connect_str, cv.CAP_ANY)
+        self.frame_width = self.video_stream.get(cv.CAP_PROP_FRAME_WIDTH)
+        self.frame_height = self.video_stream.get(cv.CAP_PROP_FRAME_HEIGHT)
+        self.video_thread.start()
+
+    # Precond:
+    #   None.
+    #
+    # Postcond:
+    #   Updates video from webcam.
+    def __receive_video(self):
+        while self.stream_active:
+            ret, img = self.video_stream.read()
+            if ret:
+                self.last_frame = img
+        self.video_stream.release()

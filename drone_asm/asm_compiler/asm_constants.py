@@ -33,9 +33,9 @@ ARGS_DICT = {
     1: ["PUSH_NUM", "PUSH_RETURN", "PUSH_PIC", "POP_NUM", "POP_PIC", "JUMP",
         "FORWARD", "BACKWARD", "LEFT", "RIGHT", "UP", "DOWN", "ROTATE_CW", "ROTATE_CCW",
         "DISPLAY", "TAKE_PIC"],
-    2: ["STORE", "COPY", "COPY_PIC"],
+    2: ["STORE", "COPY", "COPY_PIC", "LOAD_PIC"],
     3: ["BRANCH_EQ", "BRANCH_NE", "BRANCH_GT", "BRANCH_LT", "BRANCH_GE", "BRANCH_LE",
-        "ADD", "SUB", "MULT", "DIV", "IDIV", "RDIV"],
+        "ADD", "SUB", "MULT", "DIV", "IDIV", "RDIV", "DETECT_FACE", "MATCH_FACE"]
 }
 
 COMMAND_LIST = list(chain.from_iterable(ARGS_DICT.values()))

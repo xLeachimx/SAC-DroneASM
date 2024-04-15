@@ -73,7 +73,9 @@ Camera Operations:
 TAKE_PIC
 
 Computer Vision Operations:
-**Coming Soon**
+LOAD_PIC
+DETECT_FACE
+MATCH_FACE
 
 
 Comments are denoted by #, all characters after the # on a line are ignored.
@@ -85,6 +87,7 @@ How big is the DroneASM virtual machine?
 The DroneASM virtual machine consists of the following:
 16 general purpose numerical registers ($R1 - $R16)
 8 picture registers ($P1 - $P8)
+8 face registers ($F1 - $F8)
 1 Return address register (Not directly settable)
 1 general purpose numerical value stack
 1 picture stack

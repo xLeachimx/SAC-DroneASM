@@ -24,6 +24,10 @@ def _test_pic_register(token: Token):
     return token.token_type == "PicReg"
 
 
+def _test_face_register(token: Token):
+    return token.token_type == "FaceReg"
+
+
 def _test_identifier(token: Token):
     return token.token_type == "Identifier"
 
@@ -104,6 +108,26 @@ def validate_line(tokens: [Token, ...]):
             if not (_test_num_register(args[0]) or _test_numerical(args[0])):
                 raise arg_type_exception
             if not (_test_num_register(args[1]) or _test_numerical(args[1])):
+                raise arg_type_exception
+            if not _test_num_register(args[2]):
+                raise arg_type_exception
+        # Computer Vision Cases
+        case "LOAD_PIC":
+            if not _test_string(args[0]):
+                raise arg_type_exception
+            if not _test_pic_register(args[1]):
+                raise arg_type_exception
+        case "DETECT_FACE":
+            if not _test_pic_register(args[0]):
+                raise arg_type_exception
+            if not _test_face_register(args[1]):
+                raise arg_type_exception
+            if not _test_num_register(args[2]):
+                raise arg_type_exception
+        case "MATCH_FACE":
+            if not _test_face_register(args[0]):
+                raise arg_type_exception
+            if not _test_face_register(args[1]):
                 raise arg_type_exception
             if not _test_num_register(args[2]):
                 raise arg_type_exception

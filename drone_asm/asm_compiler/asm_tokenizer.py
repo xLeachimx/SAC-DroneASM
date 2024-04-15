@@ -15,10 +15,13 @@
 #
 #       Reg -P-> PicReg1
 #       Reg -R-> NumReg1
+#       Reg -F-> FaceReg1
 #       PicReg1 -#-> PicReg2
 #       NumReg1 -#-> NumReg2
+#       FaceReg1 -#-> FaceReg2
 #       PicReg2 -#-> PicReg2
 #       NumReg2 -#-> NumReg2
+#       FaceReg2 -#-> FaceReg2
 #
 #       Str1 -*-> Str1
 #       Str1 -"-> Str2
@@ -63,6 +66,7 @@ def tokenize(line: str):
     type_dict = {
         "PicReg2": "PicReg",
         "NumReg2": "NumReg",
+        "FaceReg2": "FaceReg",
         "Str2": "String",
         "Num1": "IntNumber",
         "Num2": "FloatNumber",
@@ -100,6 +104,8 @@ def tokenize(line: str):
                     state = "PicReg1"
                 elif char == "R":
                     state = "NumReg1"
+                elif char == "F":
+                    state = "FaceReg1"
                 else:
                     raise TokenizerErrorException("Unknown/incorrect symbol in register token.")
             case "PicReg1":
@@ -125,6 +131,17 @@ def tokenize(line: str):
                     current_token.append(char)
                 else:
                     raise TokenizerErrorException("Unknown/incorrect symbol in register token.")
+            case "FaceReg1":
+                if char.isdigit():
+                    state = "FaceReg2"
+                    current_token.append(char)
+                else:
+                    raise TokenizerErrorException("Unknown/incorrect symbol in face register token.")
+            case "FaceReg2":
+                if char.isdigit():
+                    current_token.append(char)
+                else:
+                    raise TokenizerErrorException("Unknown/incorrect symbol in face register token.")
             # String States
             case "Str1":
                 if char == '"':
