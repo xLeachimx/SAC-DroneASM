@@ -108,8 +108,6 @@ class DroneASMInterface:
                 self.clear_paths()
                 self.render_path()
                 self.root.update()
-                if self.simulation:
-                    time.sleep(.1)
                 if self.stop_run:
                     break
             self.render_path()
@@ -141,7 +139,7 @@ class DroneASMInterface:
                 self.program_txt.insert('1.0', fin.read())
 
     @staticmethod
-    def move_pic(self):
+    def move_pic():
         filename = tk.filedialog.askopenfilename(initialdir=os.path.curdir, title="Select File to Load",
                                                  filetypes=[("Pictures", "*.jpg"), ("All Files", "*.*")])
         if filename:
@@ -219,8 +217,10 @@ class DroneASMInterface:
 
     def stop_prog(self):
         self.stop_run = True
+        self.vm.running = False
 
     def destroy(self):
+        self.clear_paths()
         self.root.destroy()
 
     @staticmethod

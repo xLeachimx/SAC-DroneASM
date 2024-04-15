@@ -59,20 +59,21 @@ class DroneVM:
         self.drone_tracking = SimulatedDrone()
         self.drone = SimulatedDrone()
         self.drone_path = [self.drone_tracking.get_state()['loc'][:]]
+        self.running = False
     
     def run_program(self, program: Program, simulated: bool = True):
         program_counter = 0
-        running = True
+        self.running = True
         if not simulated:
             self.drone = TelloDrone()
         if not self.drone.connect():
             self.drone.shutdown()
             raise RuntimeHardwareErrorException("Unable to connect to drone.")
         # Main Execution Look
-        while running:
+        while self.running:
             yield None
             if program_counter >= program.line_count():
-                running = False
+                self.running = False
                 continue
             current_line = program.get_line(program_counter)
             jumped = False
@@ -81,7 +82,7 @@ class DroneVM:
                 case "NOP":
                     pass
                 case "HALT":
-                    running = False
+                    self.running = False
                     continue
                 # Variable operations
                 case "STORE":
